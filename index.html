@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remus Music Group</title>
+    <meta name="description" content="United Kingdom's Premier Music Distribution Platform">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; background: #fff; }
+
+        /* Header */
+        header { position: sticky; top: 0; background: #fff; border-bottom: 1px solid #eaeaea; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
+        header .logo { font-size: 1.8rem; font-weight: bold; color: #000; }
+        header nav ul { list-style: none; display: flex; gap: 2rem; }
+        header nav a { text-decoration: none; color: #333; font-weight: 500; transition: color .3s; }
+        header nav a:hover { color: #1db954; } /* Spotify yeşili accent */
+
+        .auth-buttons button { background: #1db954; color: #fff; border: none; padding: 0.7rem 1.5rem; border-radius: 30px; cursor: pointer; font-weight: bold; transition: background .3s; }
+        .auth-buttons button:hover { background: #1ed760; }
+
+        /* Hero Section */
+        #hero { background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%); padding: 6rem 5%; text-align: center; }
+        #hero h1 { font-size: 3.2rem; margin-bottom: .8rem; color: #000; }
+        #hero p { font-size: 1.3rem; color: #555; max-width: 800px; margin: 0 auto 2.5rem; }
+        #hero .cta { display: inline-block; background: #1db954; color: #fff; padding: 1rem 2.5rem; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 1.1rem; transition: background .3s; }
+        #hero .cta:hover { background: #1ed760; }
+
+        /* Features */
+        #features { padding: 5rem 5%; background: #fff; }
+        #features h2 { text-align: center; margin-bottom: 1.5rem; font-size: 2.4rem; }
+        #features > p { text-align: center; margin-bottom: 3rem; color: #666; }
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+        .feature-card { background: #f9f9f9; padding: 2rem; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,.05); transition: transform .3s, box-shadow .3s; }
+        .feature-card:hover { transform: translateY(-10px); box-shadow: 0 10px 20px rgba(0,0,0,.1); }
+        .feature-card h3 { margin: 1rem 0 .6rem; font-size: 1.4rem; }
+
+        /* Platforms */
+        #platforms { padding: 5rem 5%; background: #f8f9fa; text-align: center; }
+        #platforms h2 { margin-bottom: 2rem; font-size: 2.4rem; }
+        #platforms > p { margin-bottom: 2.5rem; color: #666; }
+        .platform-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .platform-list span { background: #e9ecef; padding: .6rem 1.2rem; border-radius: 8px; font-size: 1rem; font-weight: 500; }
+
+        /* About */
+        #about { padding: 5rem 5%; background: #fff; text-align: center; }
+        #about h2 { margin-bottom: 2rem; font-size: 2.4rem; }
+        #about > p { max-width: 800px; margin: 0 auto 2rem; color: #555; }
+        .about-values { display: flex; justify-content: center; gap: 4rem; flex-wrap: wrap; margin-top: 2rem; }
+        .about-values div { font-size: 1.1rem; }
+
+        /* Contact */
+        #contact { padding: 5rem 5%; background: #f8f9fa; text-align: center; }
+        #contact h2 { margin-bottom: 1.5rem; font-size: 2.4rem; }
+        #contact > p { max-width: 600px; margin: 0 auto 2rem; color: #555; }
+        #contact .info { margin: 2rem 0; font-size: 1.1rem; }
+        #contact .info a { color: #1db954; text-decoration: none; }
+        #contact form { max-width: 600px; margin: 0 auto; display: grid; gap: 1rem; }
+        #contact input, #contact textarea { padding: 1rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        #contact button { background: #1db954; color: #fff; border: none; padding: 1rem; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1rem; transition: background .3s; }
+        #contact button:hover { background: #1ed760; }
+
+        /* Footer */
+        footer { background: #222; color: #ccc; text-align: center; padding: 2rem 5%; font-size: .95rem; }
+
+        /* Animations */
+        .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 1rem; }
+            header nav ul { gap: 1rem; }
+            .auth-buttons { display: flex; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">Remus Music Group</div>
+    <nav>
+        <ul>
+            <li><a href="#features">Why Choose</a></li>
+            <li><a href="#platforms">Platforms</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+    <div class="auth-buttons">
+        <button onclick="window.location.href='/login.html'">Login</button>
+        <button onclick="window.location.href='/register.html'">Register</button>
+    </div>
+</header>
+
+<section id="hero" class="fade-in">
+    <h1>Distribute Your Music Worldwide</h1>
+    <p>Get your music on Spotify, Apple Music, Amazon Music, YouTube Music, and 150+ platforms. Keep 100% of your rights and revenue.</p>
+    <a href="#contact" class="cta">Get Started</a>
+</section>
+
+<section id="features" class="fade-in">
+    <h2>Why Choose Remus Music?</h2>
+    <p>Everything you need to succeed in the music industry</p>
+    <div class="feature-grid">
+        <div class="feature-card">
+            <h3>Global Distribution</h3>
+            <p>Reach 150+ streaming platforms and digital stores worldwide including Spotify, Apple Music, Amazon, and more.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Real-Time Analytics</h3>
+            <p>Track your streams, downloads, and revenue with detailed analytics and insights in real-time.</p>
+        </div>
+        <div class="feature-card">
+            <h3>100% Revenue</h3>
+            <p>Keep all your earnings. We don't take commission. You own your music, you keep your money.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Rights Protection</h3>
+            <p>Your music, your rights. We ensure your intellectual property is protected across all platforms.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Fast Release</h3>
+            <p>Get your music live in max 24 hours. Quick approval process with dedicated support team.</p>
+        </div>
+        <div class="feature-card">
+            <h3>24/7 Support</h3>
+            <p>Our expert team is always here to help. Get assistance whenever you need it.</p>
+        </div>
+    </div>
+</section>
+
+<section id="platforms" class="fade-in">
+    <h2>Available On All Major Platforms</h2>
+    <p>Your music everywhere your fans are</p>
+    <div class="platform-list">
+        <span>Spotify</span>
+        <span>Apple Music</span>
+        <span>YouTube Music</span>
+        <span>Amazon Music</span>
+        <span>Deezer</span>
+        <span>Tidal</span>
+        <span>SoundCloud</span>
+        <span>Instagram</span>
+        <span>TikTok</span>
+        <span>+138 more</span>
+    </div>
+</section>
+
+<section id="about" class="fade-in">
+    <h2>About Remus Music Group</h2>
+    <p>Remus Music Group is United Kingdom's premier music distribution platform, dedicated to empowering independent artists, labels, and music creators to reach global audiences.</p>
+    <p>Founded with a mission to democratize music distribution, we provide cutting-edge technology and unparalleled support to help you succeed in the digital music landscape.</p>
+    <div class="about-values">
+        <div><strong>Industry Leading</strong><br>Trusted by thousands of artists</div>
+        <div><strong>Artist First</strong><br>Your success is our priority</div>
+        <div><strong>Secure & Reliable</strong><br>Your music is safe with us</div>
+    </div>
+</section>
+
+<section id="contact" class="fade-in">
+    <h2>Get In Touch</h2>
+    <p>Have questions? We'd love to hear from you</p>
+    <div class="info">
+        <p>Email: <a href="mailto:info@remusmusic.group">info@remusmusic.group</a></p>
+        <p>Address: London, United Kingdom</p>
+    </div>
+    <form name="contact" method="POST" data-netlify="true">
+        <input type="text" name="name" placeholder="Your Name" required>
+        <input type="email" name="email" placeholder="Your Email" required>
+        <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+        <button type="submit">Send Message</button>
+    </form>
+</section>
+
+<footer>
+    <p>© 2025 Remus Music Group. All rights reserved.</p>
+</footer>
+
+<script>
+    // Smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    // Fade-in on scroll
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => {
+        observer.observe(el);
+    });
+</script>
+
+</body>
+</html>
