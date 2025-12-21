@@ -106,15 +106,16 @@
         });
 
         const data = await res.json();
-        if (data.success) {
-            localStorage.setItem('token', data.token);
-            alert('Giriş başarılı!');
-            window.location.href = '/';
-        } else {
-            alert(data.message || 'Hata!');
-        }
+if (data.success) {
+    localStorage.setItem('token', data.token);
+    alert('Giriş başarılı!');
+    window.location.href = '/dashboard.html';  // BURASI DEĞİŞTİ!
+} else {
+    alert(data.message || 'Hata!');
+}
     });
 </script>
 
 </body>
 </html>
+
