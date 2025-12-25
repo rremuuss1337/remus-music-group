@@ -1,5 +1,7 @@
+const fetch = require('node-fetch'); // Eğer hata alırsan bu satırı kaldır, Netlify'da fetch gömülüdür.
+
 exports.handler = async (event, context) => {
-  // CORS ve Method kontrolü
+  // Sadece POST isteklerini kabul et
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
@@ -7,23 +9,21 @@ exports.handler = async (event, context) => {
   try {
     const { username, email, password } = JSON.parse(event.body);
 
+    // Upstash Bilgileri (Netlify panelinden gelecek)
     const url = process.env.UPSTASH_REDIS_REST_URL;
     const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
-    // Email içinde @ ve . olduğu için URL güvenliği adına encode ediyoruz
-    const safeEmail = encodeURIComponent(email);
-
-    const redisResponse = await fetch(`${url}/set/user:${safeEmail}`, {
+    // Redis'e kullanıcıyı kaydet (Anahtar olarak email kullanıyoruz)
+    // SET komutu ile kullanıcı verilerini JSON olarak saklıyoruz
+    const redisResponse = await fetch(`${url}/set/user:${email}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${token}`
       },
-      // Veriyi string olarak saklıyoruz
       body: JSON.stringify({
         username,
         email,
-        password
+        password // Not: Gerçek projelerde şifreyi hash'lemelisin!
       })
     });
 
@@ -32,20 +32,15 @@ exports.handler = async (event, context) => {
     if (result.result === "OK") {
       return {
         statusCode: 200,
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: "Başarıyla kayıt olundu!" }),
       };
     } else {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ message: "Kayıt sırasında hata: " + JSON.stringify(result) }),
-      };
+      throw new Error("Redis kayıt hatası");
     }
 
   } catch (error) {
     return {
       statusCode: 500,
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: "Sunucu hatası: " + error.message }),
     };
   }
