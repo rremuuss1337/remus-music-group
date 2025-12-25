@@ -3,280 +3,393 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Remus Music Group - Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Backstage - Remus Music Group</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-main: #121212;
-            --bg-sidebar: #181818;
-            --bg-card: #282828;
-            --bg-hover: #3E3E3E;
-            --spotify-green: #1DB954;
-            --text-main: #FFFFFF;
-            --text-dim: #B3B3B3;
-            --border: rgba(255,255,255,0.1);
+            --bg: #0a0a0a;
+            --surface: #121212;
+            --surface-hover: #1a1a1a;
+            --text: #e0e0e0;
+            --text-secondary: #9e9e9e;
+            --accent: #9f00ff;
+            --accent-hover: #b300ff;
+            --border: #252525;
+            --shadow: 0 8px 32px rgba(0,0,0,0.5);
+            --gradient: linear-gradient(135deg, #1a0033, #0a0a0a);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            display: flex;
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
             height: 100vh;
+            background: #000;
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        .sidebar.hidden { transform: translateX(-100%); }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.2rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: var(--surface-hover);
+            color: white;
+        }
+        .nav-item span { margin-left: 1rem; font-weight: 500; }
+
+        /* Top Bar */
+        header {
+            position: fixed;
+            top: 0;
+            left: 260px;
+            right: 0;
+            height: 70px;
+            background: #000;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            z-index: 999;
+            transition: left 0.3s ease;
+        }
+        header.shifted { left: 0; }
+        .menu-toggle { font-size: 1.6rem; cursor: pointer; color: var(--text); margin-right: 1.5rem; display: none; }
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            background: var(--surface);
+            border-radius: 50px;
+            padding: 0.6rem 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            flex: 1;
+            font-size: 1rem;
+        }
+        .search-bar input::placeholder { color: var(--text-secondary); }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .user-profile span { font-weight: 500; }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 90px 2rem 2rem;
+            transition: margin-left 0.3s ease;
+        }
+        .main-content.shifted { margin-left: 0; }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s forwards;
+        }
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        .stat-card:nth-child(5) { animation-delay: 0.5s; }
+        .stat-card:hover { transform: translateY(-8px); }
+        .stat-card .icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.8rem;
+            opacity: 0.15;
+        }
+        .stat-card strong {
+            font-size: 2.2rem;
+            color: var(--accent);
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+        .stat-card small {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        .growth {
+            color: #00c853;
+            font-size: 0.9rem;
+            margin-left: 0.5rem;
+        }
+        .growth.red { color: #ff1744; }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .chart-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        .chart-card h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+        }
+        .release-table {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             overflow: hidden;
         }
-
-        /* SIDEBAR */
-        aside {
-            width: 240px;
-            background-color: #000;
-            display: flex;
-            flex-direction: column;
-            padding: 24px 12px;
-            border-right: 1px solid var(--border);
+        .release-table table {
+            width: 100%;
+            border-collapse: collapse;
         }
-
-        .logo {
-            padding: 0 12px 32px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-main);
+        .release-table th, .release-table td {
+            padding: 1.2rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
         }
-
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: var(--spotify-green);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        nav ul { list-style: none; }
-        nav li {
-            padding: 12px;
-            border-radius: 4px;
-            color: var(--text-dim);
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 14px;
+        .release-table th {
+            background: #1a1a1a;
             font-weight: 600;
+            color: var(--text-secondary);
         }
-
-        nav li:hover { color: #fff; }
-        nav li.active { background: var(--bg-card); color: #fff; }
-
-        .admin-tag {
-            background: #5d5dff;
-            font-size: 9px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            text-transform: uppercase;
+        .release-table img {
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            object-fit: cover;
         }
-
-        /* MAIN CONTENT */
-        main {
-            flex: 1;
-            padding: 32px;
-            overflow-y: auto;
-            background: linear-gradient(to bottom, #1f1f1f 0%, #121212 100%);
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-        }
-
-        .user-pill {
-            background: rgba(0,0,0,0.7);
-            padding: 4px 12px 4px 4px;
-            border-radius: 32px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            font-weight: 700;
-            border: 1px solid var(--border);
-        }
-
-        .user-pill img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
-
-        /* GRID SYSTEM */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .card {
-            background: var(--bg-card);
-            padding: 24px;
-            border-radius: 8px;
-            transition: background 0.3s;
-            border: 1px solid transparent;
-        }
-
-        .card:hover { background: var(--bg-hover); border-color: var(--border); }
-        .card h3 { font-size: 13px; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        .card .value { font-size: 24px; font-weight: 700; }
-
-        /* LIST SECTION */
-        .section-box {
-            background: var(--bg-card);
-            border-radius: 8px;
-            padding: 24px;
-            margin-top: 24px;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; color: var(--text-dim); font-size: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
-        td { padding: 12px 0; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-
-        .status-badge {
-            padding: 4px 8px;
+        .error-tag {
+            background: #ff1744;
+            color: white;
+            padding: 0.4rem 0.8rem;
             border-radius: 4px;
-            font-size: 11px;
-            font-weight: 700;
+            font-size: 0.8rem;
         }
-        .status-active { background: rgba(29, 185, 84, 0.2); color: var(--spotify-green); }
 
-        .btn-logout {
-            margin-top: auto;
-            background: none;
-            border: 1px solid #333;
-            color: var(--text-dim);
-            padding: 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
         }
-        .btn-logout:hover { border-color: #f15a5a; color: #f15a5a; }
+
+        @media (max-width: 1024px) {
+            .content-grid { grid-template-columns: 1fr; }
+            .sidebar { width: 80px; }
+            .sidebar span { display: none; }
+            .main-content { margin-left: 80px; }
+            header { left: 80px; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); width: 260px; }
+            .sidebar.active { transform: translateX(0); }
+            .menu-toggle { display: block; }
+            header { left: 0; }
+            .main-content { margin-left: 0; }
+            .stats-bar { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+        }
     </style>
 </head>
 <body>
-
-    <aside>
-        <div class="logo">
-            <div class="logo-icon">🎧</div>
-            Remus Music
-        </div>
-        <nav>
-            <ul>
-                <li class="active" onclick="toggleView('userView')">🏠 Genel Bakış</li>
-                <li onclick="alert('Yakında!')">🎵 Şarkılarım</li>
-                <li onclick="alert('Yakında!')">📈 İstatistikler</li>
-                <li onclick="alert('Yakında!')">⚙️ Ayarlar</li>
-                <li id="adminMenu" style="display:none; color: #5d5dff;" onclick="toggleView('adminView')">
-                    🛡️ Admin Panel <span class="admin-tag">Pro</span>
-                </li>
-            </ul>
-        </nav>
-        <button class="btn-logout" onclick="logout()">Güvenli Çıkış</button>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">REMUS</div>
+        <a href="#" class="nav-item active"><span>Dashboard</span></a>
+        <a href="#" class="nav-item"><span>New Release</span></a>
+        <a href="#" class="nav-item"><span>Catalog Music</span></a>
+        <a href="#" class="nav-item"><span>Label Manage</span></a>
+        <a href="#" class="nav-item"><span>Manage Users</span></a>
+        <a href="#" class="nav-item"><span>Analytics</span></a>
+        <a href="#" class="nav-item"><span>Payment</span></a>
+        <a href="#" class="nav-item"><span>YouTube Request</span></a>
+        <a href="#" class="nav-item"><span>Digital Music Records</span></a>
+        <a href="#" class="nav-item"><span>About Us</span></a>
+        <a href="#" class="nav-item"><span>Career</span></a>
+        <a href="#" class="nav-item"><span>Support</span></a>
+        <a href="#" class="nav-item"><span>Policies & Terms</span></a>
     </aside>
 
-    <main>
-        <header>
-            <h1 id="pageTitle">Sanatçı Paneli</h1>
-            <div class="user-pill">
-                <img src="https://ui-avatars.com/api/?name=Remus+User&background=1DB954&color=fff" id="userImg">
-                <span id="userName">Kullanıcı</span>
+    <!-- Header -->
+    <header>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <div class="search-bar">
+                <input type="text" placeholder="Search your Music Catalog, Users, Labels etc...">
             </div>
-        </header>
+        </div>
+        <div class="user-profile">
+            <span id="usernameDisplay">Kullanıcı</span>
+            <img src="https://via.placeholder.com/40" alt="Profile">
+            <button class="logout-btn" id="logoutBtn">Çıkış</button>
+        </div>
+    </header>
 
-        <div id="userView">
-            <div class="dashboard-grid">
-                <div class="card"><h3>Toplam Dinlenme</h3><div class="value">1.284.567</div></div>
-                <div class="card"><h3>Aylık Dinleyici</h3><div class="value">42.105</div></div>
-                <div class="card"><h3>Bu Ayki Kazanç</h3><div class="value">₺12.450,00</div></div>
-                <div class="card"><h3>Takipçi</h3><div class="value">8.902</div></div>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="stats-bar">
+            <div class="stat-card">
+                <strong id="totalStreams">0</strong>
+                <p>Total Streams</p>
+                <small class="growth">+14.2% ↑</small>
             </div>
-
-            <div class="section-box">
-                <div class="section-header"><h2>Son Yayınlar</h2></div>
-                <table>
-                    <thead>
-                        <tr><th>ŞARKI ADI</th><th>YAYIN TARİHİ</th><th>DURUM</th><th>DİNLENME</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Remus Midnight (Original Mix)</td><td>12 Haz 2025</td><td><span class="status-badge status-active">YAYINDA</span></td><td>450.231</td></tr>
-                        <tr><td>Dark Echoes</td><td>01 Haz 2025</td><td><span class="status-badge status-active">YAYINDA</span></td><td>120.440</td></tr>
-                    </tbody>
-                </table>
+            <div class="stat-card">
+                <strong id="totalRevenue">$0</strong>
+                <p>Total Revenue</p>
+                <small class="growth">+12.2% ↑</small>
+            </div>
+            <div class="stat-card">
+                <strong id="balance">$0</strong>
+                <p>Balance</p>
+                <button style="margin-top: 0.5rem; background: linear-gradient(90deg, #ff6b6b, #ff8e53); color: white; padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.9rem;">Request Payment</button>
+            </div>
+            <div class="stat-card">
+                <strong id="totalTracks">0</strong>
+                <p>Total Tracks</p>
+                <small class="growth">+2 ↑</small>
             </div>
         </div>
 
-        <div id="adminView" style="display:none;">
-            <div class="dashboard-grid">
-                <div class="card" style="border-left: 4px solid #5d5dff;"><h3>Toplam Sanatçı</h3><div class="value">1,240</div></div>
-                <div class="card" style="border-left: 4px solid #ffcc00;"><h3>Onay Bekleyen</h3><div class="value">24</div></div>
-                <div class="card" style="border-left: 4px solid var(--spotify-green);"><h3>Platform Cirosu</h3><div class="value">₺840.000</div></div>
+        <div class="content-grid">
+            <div class="chart-card">
+                <h3>Streaming Performance</h3>
+                <div style="height: 300px; background: #1a1a1a; border-radius: 8px; margin-top: 1rem; position: relative;">
+                    <!-- Placeholder chart – gerçekte Chart.js veya benzeri eklenebilir -->
+                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, #1a0033, transparent);"></div>
+                    <div style="position: absolute; bottom: 20%; left: 10%; right: 10%; height: 2px; background: var(--accent);"></div>
+                </div>
             </div>
 
-            <div class="section-box">
-                <h2>Bekleyen Şarkı Onayları</h2>
-                <p style="color:var(--text-dim); margin-top:10px;">Şu an için incelenmesi gereken yeni bir dosya bulunmuyor.</p>
+            <div class="chart-card">
+                <h3>Revenue Report</h3>
+                <div style="height: 300px; background: #1a1a1a; border-radius: 8px; margin-top: 1rem; display: flex; align-items: center; justify-content: center;">
+                    <!-- Placeholder pie chart -->
+                    <div style="width: 180px; height: 180px; border-radius: 50%; background: conic-gradient(#9f00ff 0% 40%, #1db954 40% 65%, #ff6b6b 65% 85%, #00c853 85% 100%);"></div>
+                </div>
             </div>
+        </div>
+
+        <div class="release-table">
+            <h3 style="padding: 1.5rem; border-bottom: 1px solid var(--border);">Latest Releases</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ALBUM / TRACK NAME</th>
+                        <th>PHOTO</th>
+                        <th>ISRC / UPC CODE</th>
+                        <th>REVENUE</th>
+                        <th>RELEASE DATE</th>
+                        <th>TOTAL STREAMS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Rabba Janda - Mission Majnu</td>
+                        <td><img src="https://via.placeholder.com/50" alt="cover"></td>
+                        <td>#9405822</td>
+                        <td>$1,250.00</td>
+                        <td>03 Aug 2017</td>
+                        <td>53k</td>
+                    </tr>
+                    <tr>
+                        <td>Apna Bana Le - Bhediya</td>
+                        <td><img src="https://via.placeholder.com/50" alt="cover"></td>
+                        <td>#9405820</td>
+                        <td>$1,500.00</td>
+                        <td>03 Aug 2017</td>
+                        <td class="error-tag">Release Error</td>
+                    </tr>
+                    <tr>
+                        <td>Maan Meri Jaan</td>
+                        <td><img src="https://via.placeholder.com/50" alt="cover"></td>
+                        <td>#9405830</td>
+                        <td>$1,400.00</td>
+                        <td>03 Aug 2017</td>
+                        <td>2m+</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const username = localStorage.getItem('username') || "Sanatçı";
-            const token = localStorage.getItem('token');
+        // Token kontrolü
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = '/login.html';
 
-            if (!token) { window.location.href = '/login.html'; return; }
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            document.getElementById('usernameDisplay').textContent = payload.username;
+        } catch (e) {
+            document.getElementById('usernameDisplay').textContent = 'Kullanıcı';
+        }
 
-            document.getElementById('userName').textContent = username;
-            document.getElementById('userImg').src = `https://ui-avatars.com/api/?name=${username}&background=1DB954&color=fff`;
-
-            // ADMIN KONTROLÜ
-            if (username.toLowerCase() === 'admin' || username.toLowerCase() === 'remus') {
-                document.getElementById('adminMenu').style.display = 'flex';
-            }
+        // Çıkış
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            window.location.href = '/';
         });
 
-        function toggleView(view) {
-            const userView = document.getElementById('userView');
-            const adminView = document.getElementById('adminView');
-            const title = document.getElementById('pageTitle');
+        // Sidebar toggle (mobil)
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.querySelector('.sidebar');
+        const mainContent = document.querySelector('.main-content');
+        const header = document.querySelector('header');
 
-            if (view === 'adminView') {
-                userView.style.display = 'none';
-                adminView.style.display = 'block';
-                title.textContent = "Yönetici Paneli";
-            } else {
-                userView.style.display = 'block';
-                adminView.style.display = 'none';
-                title.textContent = "Sanatçı Paneli";
-            }
-            
-            // Sidebar active class değişimi
-            document.querySelectorAll('nav li').forEach(li => li.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-        }
-
-        function logout() {
-            localStorage.clear();
-            window.location.href = '/login.html';
-        }
+        menuToggle?.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            mainContent.classList.toggle('shifted');
+            header.classList.toggle('shifted');
+        });
     </script>
 </body>
 </html>
