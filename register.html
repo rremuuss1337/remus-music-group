@@ -3,44 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Remus Music Group</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: linear-gradient(#f5f7fa, #e4edf5); color: #333; min-height: 100vh; display: flex; flex-direction: column; }
-        header { background: #fff; border-bottom: 1px solid #ddd; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 1.8rem; font-weight: bold; }
-        nav ul { list-style: none; display: flex; gap: 2rem; }
-        nav a { color: #333; text-decoration: none; }
-        .auth-buttons button { background: #1db954; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 30px; cursor: pointer; }
-        .container { max-width: 450px; margin: 6rem auto; padding: 2rem; background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-        h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
-        form { display: grid; gap: 1.2rem; }
-        input { padding: 1rem; border: 1px solid #ddd; border-radius: 8px; }
-        button[type="submit"] { background: #1db954; color: white; border: none; padding: 1rem; border-radius: 30px; cursor: pointer; font-size: 1.1rem; }
-        .link { margin-top: 1.5rem; }
-        .link a { color: #1db954; text-decoration: none; font-weight: bold; }
-        footer { margin-top: auto; background: #222; color: #ccc; text-align: center; padding: 2rem; }
-    </style>
+    <title>Register</title>
+    <style>body { font-family: Arial; padding: 50px; text-align: center; } form { max-width: 400px; margin: auto; } input { display: block; width: 100%; margin: 10px 0; padding: 10px; } button { padding: 10px 20px; background: #1db954; color: white; border: none; cursor: pointer; }</style>
 </head>
 <body>
-<header>
-    <a href="/" class="logo">Remus Music Group</a>
-    <nav>
-        <ul>
-            <li><a href="/#features">Why Choose</a></li>
-            <li><a href="/#platforms">Platforms</a></li>
-            <li><a href="/#about">About</a></li>
-            <li><a href="/#contact">Contact</a></li>
-        </ul>
-    </nav>
-    <div class="auth-buttons">
-        <button onclick="window.location.href='/login.html'">Login</button>
-    </div>
-</header>
-
-<div class="container">
-    <h1>Create Account</h1>
-    <p class="subtitle">Join Remus Music Group</p>
-
+    <h1>Register</h1>
     <form id="registerForm">
         <input type="text" id="username" placeholder="Username" required>
         <input type="email" id="email" placeholder="Email" required>
@@ -49,39 +16,32 @@
         <button type="submit">Register</button>
     </form>
 
-    <div class="link">
-        Already have an account? <a href="/login.html">Login here</a>
-    </div>
-</div>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alert('Form tetiklendi!');
 
-<footer>
-    <p>© 2025 Remus Music Group</p>
-</footer>
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
 
-<script>
-    document.getElementById('registerForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const username = document.getElementById('username').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
+            if (password !== confirmPassword) return alert('Şifreler eşleşmiyor!');
 
-        if (password !== confirmPassword) return alert('Şifreler eşleşmiyor!');
-        if (password.length < 6) return alert('Şifre en az 6 karakter olmalı!');
-
-        try {
-            const res = await fetch('/.netlify/functions/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password })
-            });
-            const data = await res.json();
-            alert(data.message || 'İşlem tamamlandı!');
-            if (data.success) window.location.href = '/login.html';
-        } catch (err) {
-            alert('Bağlantı hatası: ' + err.message);
-        }
-    });
-</script>
+            try {
+                alert('Fetch başlıyor... URL: ' + username + ' - ' + email);
+                const res = await fetch('/.netlify/functions/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                const data = await res.json();
+                alert('Cevap: ' + JSON.stringify(data));
+                if (data.success) window.location.href = '/login.html';
+            } catch (err) {
+                alert('Fetch hatası: ' + err.message + ' - Lütfen konsolu kontrol et (F12)');
+            }
+        });
+    </script>
 </body>
 </html>
