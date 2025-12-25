@@ -1,7 +1,6 @@
-const fetch = require('node-fetch'); // Eğer hata alırsan bu satırı kaldır, Netlify'da fetch gömülüdür.
+// En üstteki require('node-fetch') satırını SİLDİK.
 
 exports.handler = async (event, context) => {
-  // Sadece POST isteklerini kabul et
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
@@ -9,12 +8,10 @@ exports.handler = async (event, context) => {
   try {
     const { username, email, password } = JSON.parse(event.body);
 
-    // Upstash Bilgileri (Netlify panelinden gelecek)
     const url = process.env.UPSTASH_REDIS_REST_URL;
     const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
-    // Redis'e kullanıcıyı kaydet (Anahtar olarak email kullanıyoruz)
-    // SET komutu ile kullanıcı verilerini JSON olarak saklıyoruz
+    // Doğrudan global fetch kullanıyoruz
     const redisResponse = await fetch(`${url}/set/user:${email}`, {
       method: 'POST',
       headers: {
@@ -23,7 +20,7 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         username,
         email,
-        password // Not: Gerçek projelerde şifreyi hash'lemelisin!
+        password
       })
     });
 
@@ -32,15 +29,17 @@ exports.handler = async (event, context) => {
     if (result.result === "OK") {
       return {
         statusCode: 200,
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: "Başarıyla kayıt olundu!" }),
       };
     } else {
-      throw new Error("Redis kayıt hatası");
+      throw new Error("Redis kayıt hatası: " + JSON.stringify(result));
     }
 
   } catch (error) {
     return {
       statusCode: 500,
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: "Sunucu hatası: " + error.message }),
     };
   }
