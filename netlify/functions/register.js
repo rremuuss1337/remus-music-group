@@ -1,57 +1,35 @@
-const { neon } = require('@neondatabase/serverless');
+const { Redis } = require('@upstash/redis');
 const bcrypt = require('bcryptjs');
 
 exports.handler = async (event) => {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
-  }
+  if (event.httpMethod !== 'POST') return { statusCode: 405 };
 
   try {
     const { username, email, password } = JSON.parse(event.body);
 
-    if (!username || !email || !password) {
-      return { statusCode: 400, body: JSON.stringify({ message: 'Eksik bilgi!' }) };
-    }
+    const redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
 
-    const sql = neon(process.env.NETLIFY_DATABASE_URL);
-
-    // Tablo yoksa oluştur
-    await sql`
-      CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        username TEXT UNIQUE NOT NULL,
-        email TEXT NOT NULL,
-        password TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        last_login TIMESTAMP,
-        is_admin BOOLEAN DEFAULT FALSE
-      )
-    `;
-
-    // Aynı kullanıcı var mı?
-    const existing = await sql`SELECT id FROM users WHERE username = ${username}`;
-    if (existing.length > 0) {
+    const existing = await redis.hgetall(`user:${username}`);
+    if (Object.keys(existing).length > 0) {
       return { statusCode: 400, body: JSON.stringify({ message: 'Bu kullanıcı adı zaten alınmış!' }) };
     }
 
-    // Şifreyi hash'le
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hash = await bcrypt.hash(password, 10);
 
-    // Kullanıcıyı ekle
-    await sql`
-      INSERT INTO users (username, email, password)
-      VALUES (${username}, ${email}, ${hashedPassword})
-    `;
+    await redis.hset(`user:${username}`, {
+      password: hash,
+      email,
+      createdAt: Date.now(),
+      lastLogin: 0,
+      isAdmin: false
+    });
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ success: true, message: 'Kayıt başarılı!' })
-    };
+    return { statusCode: 200, body: JSON.stringify({ success: true, message: 'Kayıt başarılı!' }) };
   } catch (error) {
-    console.error('Register error:', error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: 'Sunucu hatası!' })
-    };
+    console.error(error);
+    return { statusCode: 500, body: JSON.stringify({ message: 'Sunucu hatası!' }) };
   }
 };
