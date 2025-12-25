@@ -8,7 +8,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; background: #fff; }
 
-        header { background: #fff; border-bottom: 1px solid #eaeaea; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; }
+        header { background: #fff; border-bottom: 1px solid #eaeaea; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .logo { font-size: 1.8rem; font-weight: bold; color: #000; }
         nav ul { list-style: none; display: flex; gap: 2rem; }
         nav a { text-decoration: none; color: #333; font-weight: 500; transition: color .3s; }
@@ -51,16 +51,13 @@
         #contact button:hover { background: #1ed760; }
 
         footer { background: #222; color: #ccc; text-align: center; padding: 2rem 5%; font-size: .95rem; }
-        .dmca-badge-wrapper { margin-top: 1.5rem; }
-        .dmca-badge-wrapper img { width: 150px; height: auto; }
 
         .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
         .fade-in.visible { opacity: 1; transform: translateY(0); }
 
         @media (max-width: 768px) {
             header { flex-direction: column; gap: 1rem; }
-            header nav ul { gap: 1rem; }
-            .auth-buttons { display: flex; gap: 1rem; }
+            nav ul { gap: 1rem; flex-wrap: wrap; justify-content: center; }
         }
     </style>
 </head>
@@ -88,43 +85,95 @@
     <a href="#contact" class="cta">Get Started</a>
 </section>
 
-<!-- Diğer bölümler aynı kalıyor, kısalttım -->
+<section id="features" class="fade-in">
+    <h2>Why Choose Remus Music?</h2>
+    <p>Everything you need to succeed in the music industry</p>
+    <div class="feature-grid">
+        <div class="feature-card">
+            <h3>Global Distribution</h3>
+            <p>Reach 150+ streaming platforms and digital stores worldwide including Spotify, Apple Music, Amazon, and more.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Real-Time Analytics</h3>
+            <p>Track your streams, downloads, and revenue with detailed analytics and insights in real-time.</p>
+        </div>
+        <div class="feature-card">
+            <h3>100% Revenue</h3>
+            <p>Keep all your earnings. We don't take commission. You own your music, you keep your money.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Rights Protection</h3>
+            <p>Your music, your rights. We ensure your intellectual property is protected across all platforms.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Fast Release</h3>
+            <p>Get your music live in max 24 hours. Quick approval process with dedicated support team.</p>
+        </div>
+        <div class="feature-card">
+            <h3>24/7 Support</h3>
+            <p>Our expert team is always here to help. Get assistance whenever you need it.</p>
+        </div>
+    </div>
+</section>
+
+<section id="platforms" class="fade-in">
+    <h2>Available On All Major Platforms</h2>
+    <p>Your music everywhere your fans are</p>
+    <div class="platform-list">
+        <span>Spotify</span>
+        <span>Apple Music</span>
+        <span>YouTube Music</span>
+        <span>Amazon Music</span>
+        <span>Deezer</span>
+        <span>Tidal</span>
+        <span>SoundCloud</span>
+        <span>Instagram</span>
+        <span>TikTok</span>
+        <span>+138 more</span>
+    </div>
+</section>
+
+<section id="about" class="fade-in">
+    <h2>About Remus Music Group</h2>
+    <p>Remus Music Group is United Kingdom's premier music distribution platform, dedicated to empowering independent artists, labels, and music creators to reach global audiences.</p>
+    <p>Founded with a mission to democratize music distribution, we provide cutting-edge technology and unparalleled support to help you succeed in the digital music landscape.</p>
+    <div class="about-values">
+        <div><strong>Industry Leading</strong><br>Trusted by thousands of artists</div>
+        <div><strong>Artist First</strong><br>Your success is our priority</div>
+        <div><strong>Secure & Reliable</strong><br>Your music is safe with us</div>
+    </div>
+</section>
+
+<section id="contact" class="fade-in">
+    <h2>Get In Touch</h2>
+    <p>Have questions? We'd love to hear from you</p>
+    <form name="contact" method="POST" data-netlify="true">
+        <input type="text" name="name" placeholder="Your Name" required>
+        <input type="email" name="email" placeholder="Your Email" required>
+        <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+        <button type="submit">Send Message</button>
+    </form>
+</section>
 
 <footer>
     <p>© 2025 Remus Music Group. All rights reserved.</p>
-    
-    <!-- DMCA Badge Eklendi -->
-    <div class="dmca-badge-wrapper">
-        <a href="https://www.dmca.com/Protection/Status.aspx?id=dcf4c5f6-f8bb-4a27-a0e8-d7b3479ae471" title="DMCA.com Protection Status" class="dmca-badge">
-            <img src="https://images.dmca.com/Badges/dmca-badge-w150-5x1-01.png?ID=dcf4c5f6-f8bb-4a27-a0e8-d7b3479ae471" alt="DMCA.com Protection Status">
-        </a>
-        <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"></script>
-    </div>
 </footer>
 
 <script>
-    // Smooth scrolling
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
+            document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
         });
     });
 
-    // Fade-in on scroll
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-            }
+            if (entry.isIntersecting) entry.target.classList.add('visible');
         });
     }, { threshold: 0.1 });
 
-    document.querySelectorAll('.fade-in').forEach(el => {
-        observer.observe(el);
-    });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 </script>
 
 </body>
