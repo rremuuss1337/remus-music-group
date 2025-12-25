@@ -1,5 +1,3 @@
-// login.js
-
 exports.handler = async (event, context) => {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
@@ -11,16 +9,18 @@ exports.handler = async (event, context) => {
     const url = process.env.UPSTASH_REDIS_REST_URL;
     const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
-    // HATA BURADAYDI: /hgetall yerine /get kullanmalıyız
-    const redisResponse = await fetch(`${url}/get/user:${email}`, {
+    const safeEmail = encodeURIComponent(email);
+
+    // Veriyi çekiyoruz
+    const redisResponse = await fetch(`${url}/get/user:${safeEmail}`, {
       headers: {
-        Authorization: `Bearer ${token}`
+        'Authorization': `Bearer ${token}`
       }
     });
 
     const result = await redisResponse.json();
 
-    // Redis'te kullanıcı bulunamadıysa result.result null döner
+    // Kullanıcı yoksa result.result null döner
     if (!result.result) {
       return {
         statusCode: 401,
@@ -29,10 +29,9 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Gelen veri string olduğu için JSON.parse yapıyoruz
+    // Redis'ten gelen veri string olduğu için objeye çeviriyoruz
     const user = JSON.parse(result.result);
 
-    // Şifre kontrolü
     if (user.password === password) {
       return {
         statusCode: 200,
