@@ -3,43 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
-    <style>body { font-family: Arial; padding: 50px; text-align: center; } form { max-width: 400px; margin: auto; } input { display: block; width: 100%; margin: 10px 0; padding: 10px; } button { padding: 10px 20px; background: #1db954; color: white; border: none; cursor: pointer; }</style>
+    <title>Register - Remus Music Group</title>
+    <style>
+        body { font-family: Arial; background: #f0f2f5; padding: 50px; text-align: center; }
+        .container { max-width: 400px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        h1 { margin-bottom: 20px; }
+        input { display: block; width: 100%; margin: 10px 0; padding: 12px; border: 1px solid #ddd; border-radius: 5px; }
+        button { width: 100%; padding: 12px; background: #1db954; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+    </style>
 </head>
 <body>
-    <h1>Register</h1>
-    <form id="registerForm">
-        <input type="text" id="username" placeholder="Username" required>
-        <input type="email" id="email" placeholder="Email" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
-        <button type="submit">Register</button>
-    </form>
+    <div class="container">
+        <h1>Kayıt Ol</h1>
+        <form id="registerForm">
+            <input type="text" id="username" placeholder="Kullanıcı Adı" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Şifre" required>
+            <input type="password" id="confirmPassword" placeholder="Şifre Tekrar" required>
+            <button type="submit">Kayıt Ol</button>
+        </form>
+        <p style="margin-top: 20px;">Hesabın var mı? <a href="/login.html">Giriş Yap</a></p>
+    </div>
 
     <script>
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert('Form tetiklendi!');
-
             const username = document.getElementById('username').value.trim();
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
             if (password !== confirmPassword) return alert('Şifreler eşleşmiyor!');
+            if (password.length < 6) return alert('Şifre en az 6 karakter olmalı!');
 
             try {
-                alert('Fetch başlıyor... URL: ' + username + ' - ' + email);
                 const res = await fetch('/.netlify/functions/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, email, password })
                 });
+
                 const data = await res.json();
-                alert('Cevap: ' + JSON.stringify(data));
+                alert(data.message || 'İşlem tamam!');
                 if (data.success) window.location.href = '/login.html';
             } catch (err) {
-                alert('Fetch hatası: ' + err.message + ' - Lütfen konsolu kontrol et (F12)');
+                alert('Bağlantı hatası: ' + err.message);
             }
         });
     </script>
