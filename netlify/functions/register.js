@@ -1,6 +1,5 @@
-// En üstteki require('node-fetch') satırını SİLDİK.
-
 exports.handler = async (event, context) => {
+  // CORS ve Method kontrolü
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
@@ -11,12 +10,16 @@ exports.handler = async (event, context) => {
     const url = process.env.UPSTASH_REDIS_REST_URL;
     const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
-    // Doğrudan global fetch kullanıyoruz
-    const redisResponse = await fetch(`${url}/set/user:${email}`, {
+    // Email içinde @ ve . olduğu için URL güvenliği adına encode ediyoruz
+    const safeEmail = encodeURIComponent(email);
+
+    const redisResponse = await fetch(`${url}/set/user:${safeEmail}`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       },
+      // Veriyi string olarak saklıyoruz
       body: JSON.stringify({
         username,
         email,
@@ -33,7 +36,10 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({ message: "Başarıyla kayıt olundu!" }),
       };
     } else {
-      throw new Error("Redis kayıt hatası: " + JSON.stringify(result));
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ message: "Kayıt sırasında hata: " + JSON.stringify(result) }),
+      };
     }
 
   } catch (error) {
