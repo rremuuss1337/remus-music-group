@@ -1,47 +1,53 @@
-const fetch = require('node-fetch'); // Eğer hata alırsan bu satırı kaldır, Netlify'da fetch gömülüdür.
+const { Redis } = require('@upstash/redis');
+const bcrypt = require('bcryptjs');
 
-exports.handler = async (event, context) => {
-  // Sadece POST isteklerini kabul et
+exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
 
   try {
-    const { username, email, password } = JSON.parse(event.body);
+    // Body'yi güvenli parse et
+    const body = JSON.parse(event.body || "{}");
+    const { username, email, password } = body;
 
-    // Upstash Bilgileri (Netlify panelinden gelecek)
-    const url = process.env.UPSTASH_REDIS_REST_URL;
-    const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-
-    // Redis'e kullanıcıyı kaydet (Anahtar olarak email kullanıyoruz)
-    // SET komutu ile kullanıcı verilerini JSON olarak saklıyoruz
-    const redisResponse = await fetch(`${url}/set/user:${email}`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        username,
-        email,
-        password // Not: Gerçek projelerde şifreyi hash'lemelisin!
-      })
-    });
-
-    const result = await redisResponse.json();
-
-    if (result.result === "OK") {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ message: "Başarıyla kayıt olundu!" }),
-      };
-    } else {
-      throw new Error("Redis kayıt hatası");
+    if (!username || !email || !password) {
+      return { statusCode: 400, body: JSON.stringify({ message: "Eksik bilgi! (username, email, password zorunlu)" }) };
     }
 
+    // Upstash Redis bağlantısı (environment variable'lar Netlify'den gelir)
+    const redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
+
+    // Kullanıcı var mı kontrol et (email ile anahtar yapabilirsin, ama username unique olsun)
+    const existing = await redis.hgetall(`user:${username}`);
+    if (Object.keys(existing).length > 0) {
+      return { statusCode: 400, body: JSON.stringify({ message: "Bu kullanıcı adı zaten alınmış!" }) };
+    }
+
+    // Şifreyi hash'le (güvenlik için)
+    const hash = await bcrypt.hash(password, 10);
+
+    // Redis'e kaydet
+    await redis.hset(`user:${username}`, {
+      email: email,
+      password: hash,
+      createdAt: Date.now(),
+      lastLogin: 0,
+      isAdmin: false
+    });
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ success: true, message: "Başarıyla kayıt olundu!" })
+    };
   } catch (error) {
+    console.error("Register error:", error.message);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Sunucu hatası: " + error.message }),
+      body: JSON.stringify({ message: "Sunucu hatası: " + error.message })
     };
   }
 };
