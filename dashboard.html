@@ -1,84 +1,240 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Remus Music Group</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f5f7fa;
-            --text: #333;
-            --card: #fff;
+            --bg: #0f0f0f;
+            --surface: #161616;
+            --text: #e0e0e0;
+            --text-secondary: #a0a0a0;
             --accent: #1db954;
-            --header-bg: #fff;
+            --accent-hover: #1ed760;
+            --border: #252525;
+            --shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
-        body.dark {
-            --bg: #111;
-            --text: #fff;
-            --card: #222;
-            --header-bg: #000;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; transition: background 0.3s, color 0.3s; }
+        header {
+            background: #000;
+            border-bottom: 1px solid var(--border);
+            padding: 1.2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .username {
+            font-weight: 600;
+            color: var(--text);
+        }
+        .logout-btn {
+            background: #e63946;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .logout-btn:hover { background: #d32f2f; }
 
-        header { background: var(--header-bg); border-bottom: 1px solid #333; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; transition: background 0.3s; }
-        .logo { font-size: 1.8rem; font-weight: bold; color: var(--text); text-decoration: none; }
-        .theme-toggle { background: none; border: none; font-size: 1.8rem; cursor: pointer; }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 5%;
+        }
+        .welcome {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        .welcome h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s forwards 0.2s;
+        }
+        .welcome p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            opacity: 0;
+            animation: fadeInUp 0.8s forwards 0.4s;
+        }
 
-        .dashboard-container { max-width: 1000px; margin: 4rem auto; padding: 0 2rem; }
-        .welcome { text-align: center; margin-bottom: 3rem; }
-        .welcome h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-        .welcome p { color: #666; font-size: 1.2rem; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 2rem;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s forwards;
+        }
+        .card:nth-child(1) { animation-delay: 0.3s; }
+        .card:nth-child(2) { animation-delay: 0.5s; }
+        .card:nth-child(3) { animation-delay: 0.7s; }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow);
+        }
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        .card p {
+            color: var(--text-secondary);
+            margin-bottom: 1.8rem;
+            font-size: 1rem;
+        }
+        .card button {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .card button:hover {
+            background: var(--accent-hover);
+            transform: scale(1.05);
+        }
 
-        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
-        .card { background: var(--card); padding: 2rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; transition: transform 0.3s; }
-        .card:hover { transform: translateY(-10px); }
-        .card h3 { margin-bottom: 1rem; font-size: 1.5rem; }
-        .card button { background: var(--accent); color: #fff; border: none; padding: 1rem 2rem; border-radius: 30px; font-size: 1.1rem; cursor: pointer; transition: background 0.3s; }
-        .card button:hover { background: #1ed760; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 4rem;
+        }
+        .stat-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s forwards;
+        }
+        .stat-box:nth-child(1) { animation-delay: 0.9s; }
+        .stat-box:nth-child(2) { animation-delay: 1.0s; }
+        .stat-box:nth-child(3) { animation-delay: 1.1s; }
+        .stat-box:nth-child(4) { animation-delay: 1.2s; }
+        .stat-box strong {
+            font-size: 2.5rem;
+            color: var(--accent);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .stat-box p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
 
-        .logout-btn { background: #e74c3c; margin-top: 2rem; padding: 1rem 2rem; border-radius: 30px; color: #fff; border: none; cursor: pointer; font-size: 1.1rem; }
-        .logout-btn:hover { background: #c0392b; }
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        footer { text-align: center; padding: 3rem; color: #888; margin-top: 5rem; }
+        footer {
+            text-align: center;
+            padding: 4rem 5%;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 6rem;
+        }
 
         @media (max-width: 768px) {
-            .dashboard-container { padding: 0 1rem; margin: 2rem auto; }
+            .container { padding: 2rem 1.5rem; }
+            .welcome h1 { font-size: 2.2rem; }
+            .grid, .stats { gap: 1.5rem; }
         }
     </style>
 </head>
 <body>
     <header>
         <a href="/" class="logo">Remus Music Group</a>
-        <button class="theme-toggle" id="themeToggle">🌙</button>
+        <div class="user-info">
+            <span class="username" id="usernameDisplay">Kullanıcı</span>
+            <button class="logout-btn" id="logoutBtn">Çıkış Yap</button>
+        </div>
     </header>
 
-    <div class="dashboard-container">
+    <div class="container">
         <div class="welcome">
-            <h1>Hoş geldin, <span id="usernameDisplay"></span>!</h1>
-            <p>Müzik dağıtım paneline erişimin aktif.</p>
+            <h1>Hoş Geldin, <span id="welcomeName">Kullanıcı</span>!</h1>
+            <p>Müzik dağıtım paneline erişimin aktif. Şarkılarını yönet, istatistiklerini takip et.</p>
         </div>
 
-        <div class="cards">
+        <div class="grid">
             <div class="card">
                 <h3>Şarkı Yükle</h3>
-                <p>Yeni single, EP veya albümünü dünyaya dağıt.</p>
-                <button onclick="alert('Şarkı yükleme özelliği yakında!')">Yüklemeye Başla</button>
+                <p>Yeni single, EP veya albümünü yükle ve 150+ platforma anında dağıt.</p>
+                <button onclick="alert('Şarkı yükleme özelliği çok yakında aktif olacak!')">Yüklemeye Başla</button>
             </div>
+
             <div class="card">
                 <h3>İstatistikler</h3>
-                <p>Stream, indirme ve gelir takibi.</p>
-                <button onclick="alert('İstatistikler yakında!')">Görüntüle</button>
+                <p>Stream, indirme, dinlenme süresi ve gelirlerini gerçek zamanlı takip et.</p>
+                <button onclick="alert('Detaylı istatistik paneli yakında!')">Görüntüle</button>
             </div>
+
             <div class="card">
-                <h3>Raporlar</h3>
-                <p>Aylık ve yıllık performans raporları.</p>
-                <button onclick="alert('Raporlar yakında!')">İndir</button>
+                <h3>Şarkılarım</h3>
+                <p>Yüklediğin tüm parçaları listele, düzenle, sil veya performansını incele.</p>
+                <button onclick="alert('Şarkı yönetimi paneli yakında!')">Şarkılarımı Gör</button>
             </div>
         </div>
 
-        <div style="text-align: center; margin-top: 4rem;">
-            <button class="logout-btn" id="logoutBtn">Çıkış Yap</button>
+        <div class="stats">
+            <div class="stat-box">
+                <strong>1.2M</strong>
+                <p>Toplam Stream</p>
+            </div>
+            <div class="stat-box">
+                <strong>12</strong>
+                <p>Yüklenen Şarkı</p>
+            </div>
+            <div class="stat-box">
+                <strong>£4,820</strong>
+                <p>Tahmini Gelir</p>
+            </div>
+            <div class="stat-box">
+                <strong>150+</strong>
+                <p>Platform</p>
+            </div>
         </div>
     </div>
 
@@ -87,38 +243,20 @@
     </footer>
 
     <script>
-        // Karanlık mod toggle
-        const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
-
-        if (localStorage.getItem('theme') === 'dark') {
-            body.classList.add('dark');
-            themeToggle.textContent = '☀️';
-        }
-
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark');
-            if (body.classList.contains('dark')) {
-                themeToggle.textContent = '☀️';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                themeToggle.textContent = '🌙';
-                localStorage.setItem('theme', 'light');
-            }
-        });
-
-        // Kullanıcı adını göster
+        // Token kontrolü ve username çekme
         const token = localStorage.getItem('token');
         if (!token) {
             window.location.href = '/login.html';
-        } else {
-            // Token'den username çıkar (basit decode)
-            try {
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                document.getElementById('usernameDisplay').textContent = payload.username;
-            } catch (e) {
-                document.getElementById('usernameDisplay').textContent = 'Kullanıcı';
-            }
+        }
+
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const username = payload.username;
+            document.getElementById('usernameDisplay').textContent = username;
+            document.getElementById('welcomeName').textContent = username;
+        } catch (e) {
+            document.getElementById('usernameDisplay').textContent = 'Kullanıcı';
+            document.getElementById('welcomeName').textContent = 'Kullanıcı';
         }
 
         // Çıkış yap
