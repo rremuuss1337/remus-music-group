@@ -2,7 +2,9 @@ const { Redis } = require('@upstash/redis');
 const bcrypt = require('bcryptjs');
 
 exports.handler = async (event) => {
-  if (event.httpMethod !== 'POST') return { statusCode: 405 };
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: 'Method Not Allowed' };
+  }
 
   try {
     const { username, email, password } = JSON.parse(event.body);
@@ -29,7 +31,7 @@ exports.handler = async (event) => {
 
     return { statusCode: 200, body: JSON.stringify({ success: true, message: 'Kayıt başarılı!' }) };
   } catch (error) {
-    console.error(error);
+    console.error('Register error:', error);
     return { statusCode: 500, body: JSON.stringify({ message: 'Sunucu hatası!' }) };
   }
 };
