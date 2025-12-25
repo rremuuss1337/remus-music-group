@@ -3,249 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Remus Music - Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Remus Music Group - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1DB954;
-            --bg-dark: #121212;
-            --bg-card: #1E1E1E;
+            --bg-main: #121212;
+            --bg-sidebar: #181818;
+            --bg-card: #282828;
+            --bg-hover: #3E3E3E;
+            --spotify-green: #1DB954;
             --text-main: #FFFFFF;
-            --text-dim: #A7A7A7;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --text-dim: #B3B3B3;
+            --border: rgba(255,255,255,0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
         body {
-            background-color: var(--bg-dark);
+            background-color: var(--bg-main);
             color: var(--text-main);
             display: flex;
-            min-height: 100vh;
-            overflow-x: hidden;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        /* Sidebar */
+        /* SIDEBAR */
         aside {
-            width: 260px;
-            background: #000;
-            padding: 30px 20px;
+            width: 240px;
+            background-color: #000;
             display: flex;
             flex-direction: column;
-            border-right: 1px solid #282828;
-            position: fixed;
-            height: 100vh;
-            z-index: 100;
+            padding: 24px 12px;
+            border-right: 1px solid var(--border);
         }
 
         .logo {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 40px;
+            padding: 0 12px 32px;
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--spotify-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         nav ul { list-style: none; }
         nav li {
-            padding: 12px 15px;
-            margin-bottom: 5px;
-            border-radius: 8px;
-            cursor: pointer;
+            padding: 12px;
+            border-radius: 4px;
             color: var(--text-dim);
-            transition: var(--transition);
+            cursor: pointer;
+            transition: 0.2s;
             display: flex;
             align-items: center;
             gap: 12px;
+            font-size: 14px;
+            font-weight: 600;
         }
 
-        nav li:hover, nav li.active {
-            background: #282828;
-            color: #fff;
+        nav li:hover { color: #fff; }
+        nav li.active { background: var(--bg-card); color: #fff; }
+
+        .admin-tag {
+            background: #5d5dff;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            text-transform: uppercase;
         }
 
-        nav li.active { color: var(--primary); }
-
-        /* Main Content */
+        /* MAIN CONTENT */
         main {
             flex: 1;
-            margin-left: 260px;
-            padding: 40px;
-            opacity: 0;
-            animation: fadeIn 0.8s forwards;
+            padding: 32px;
+            overflow-y: auto;
+            background: linear-gradient(to bottom, #1f1f1f 0%, #121212 100%);
         }
-
-        @keyframes fadeIn { to { opacity: 1; } }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 40px;
+            margin-bottom: 32px;
         }
 
-        .user-profile {
+        .user-pill {
+            background: rgba(0,0,0,0.7);
+            padding: 4px 12px 4px 4px;
+            border-radius: 32px;
             display: flex;
             align-items: center;
-            gap: 15px;
-            background: #282828;
-            padding: 8px 15px;
-            border-radius: 30px;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            border: 1px solid var(--border);
         }
 
-        .avatar { width: 32px; height: 32px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .user-pill img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
 
-        /* Stats Grid */
-        .stats-grid {
+        /* GRID SYSTEM */
+        .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
         }
 
-        .stat-card {
+        .card {
             background: var(--bg-card);
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid #282828;
-            transition: var(--transition);
-        }
-
-        .stat-card:hover { transform: translateY(-5px); border-color: var(--primary); }
-        .stat-card h3 { color: var(--text-dim); font-size: 14px; margin-bottom: 10px; text-transform: uppercase; }
-        .stat-card p { font-size: 28px; font-weight: 700; }
-
-        /* Sections */
-        .section-title { margin-bottom: 20px; font-size: 22px; }
-        .content-area {
-            background: var(--bg-card);
-            border-radius: 12px;
-            padding: 20px;
-            min-height: 300px;
-        }
-
-        .admin-only { display: none; border: 1px dashed var(--primary); padding: 10px; border-radius: 8px; margin-top: 20px; }
-
-        button.logout {
-            margin-top: auto;
-            background: transparent;
-            border: 1px solid #333;
-            color: #ff4d4d;
-            padding: 10px;
+            padding: 24px;
             border-radius: 8px;
-            cursor: pointer;
-            transition: var(--transition);
+            transition: background 0.3s;
+            border: 1px solid transparent;
         }
 
-        button.logout:hover { background: #ff4d4d; color: white; }
+        .card:hover { background: var(--bg-hover); border-color: var(--border); }
+        .card h3 { font-size: 13px; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .card .value { font-size: 24px; font-weight: 700; }
 
-        .tag {
-            background: var(--primary);
-            font-size: 10px;
-            padding: 2px 6px;
+        /* LIST SECTION */
+        .section-box {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 24px;
+            margin-top: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; color: var(--text-dim); font-size: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+        td { padding: 12px 0; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        .status-badge {
+            padding: 4px 8px;
             border-radius: 4px;
-            margin-left: 5px;
-            vertical-align: middle;
+            font-size: 11px;
+            font-weight: 700;
         }
+        .status-active { background: rgba(29, 185, 84, 0.2); color: var(--spotify-green); }
+
+        .btn-logout {
+            margin-top: auto;
+            background: none;
+            border: 1px solid #333;
+            color: var(--text-dim);
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .btn-logout:hover { border-color: #f15a5a; color: #f15a5a; }
     </style>
 </head>
 <body>
 
     <aside>
-        <div class="logo">🎵 Remus Music</div>
+        <div class="logo">
+            <div class="logo-icon">🎧</div>
+            Remus Music
+        </div>
         <nav>
             <ul>
-                <li class="active" onclick="showSection('overview')">📊 Genel Bakış</li>
-                <li onclick="showSection('releases')">🚀 Yayınlarım</li>
-                <li onclick="showSection('upload')">📤 Şarkı Yükle</li>
-                <li id="adminNav" class="admin-only" onclick="showSection('admin')">🛡️ Admin Panel</li>
+                <li class="active" onclick="toggleView('userView')">🏠 Genel Bakış</li>
+                <li onclick="alert('Yakında!')">🎵 Şarkılarım</li>
+                <li onclick="alert('Yakında!')">📈 İstatistikler</li>
+                <li onclick="alert('Yakında!')">⚙️ Ayarlar</li>
+                <li id="adminMenu" style="display:none; color: #5d5dff;" onclick="toggleView('adminView')">
+                    🛡️ Admin Panel <span class="admin-tag">Pro</span>
+                </li>
             </ul>
         </nav>
-        <button class="logout" id="logoutBtn">Çıkış Yap</button>
+        <button class="btn-logout" onclick="logout()">Güvenli Çıkış</button>
     </aside>
 
     <main>
         <header>
-            <h1 id="welcomeText">Hoş geldin, Sanatçı</h1>
-            <div class="user-profile">
-                <div class="avatar" id="avatarInitial">R</div>
-                <span id="usernameDisplay">Kullanıcı</span>
+            <h1 id="pageTitle">Sanatçı Paneli</h1>
+            <div class="user-pill">
+                <img src="https://ui-avatars.com/api/?name=Remus+User&background=1DB954&color=fff" id="userImg">
+                <span id="userName">Kullanıcı</span>
             </div>
         </header>
 
-        <div id="overview">
-            <div class="stats-grid">
-                <div class="stat-card"><h3>Toplam Dinlenme</h3><p>1.2M</p></div>
-                <div class="stat-card"><h3>Aylık Dinleyici</h3><p>45.8K</p></div>
-                <div class="stat-card"><h3>Tahmini Kazanç</h3><p>$1,420</p></div>
-                <div class="stat-card"><h3>Aktif Yayın</h3><p>12</p></div>
+        <div id="userView">
+            <div class="dashboard-grid">
+                <div class="card"><h3>Toplam Dinlenme</h3><div class="value">1.284.567</div></div>
+                <div class="card"><h3>Aylık Dinleyici</h3><div class="value">42.105</div></div>
+                <div class="card"><h3>Bu Ayki Kazanç</h3><div class="value">₺12.450,00</div></div>
+                <div class="card"><h3>Takipçi</h3><div class="value">8.902</div></div>
             </div>
-            
-            <h2 class="section-title">Son Hareketler</h2>
-            <div class="content-area">
-                <p style="color: var(--text-dim)">Şu an görülecek yeni bir bildirim yok.</p>
+
+            <div class="section-box">
+                <div class="section-header"><h2>Son Yayınlar</h2></div>
+                <table>
+                    <thead>
+                        <tr><th>ŞARKI ADI</th><th>YAYIN TARİHİ</th><th>DURUM</th><th>DİNLENME</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Remus Midnight (Original Mix)</td><td>12 Haz 2025</td><td><span class="status-badge status-active">YAYINDA</span></td><td>450.231</td></tr>
+                        <tr><td>Dark Echoes</td><td>01 Haz 2025</td><td><span class="status-badge status-active">YAYINDA</span></td><td>120.440</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <div id="admin" style="display: none;">
-            <h2 class="section-title">🛡️ Admin Denetim Masası <span class="tag">Yetkili</span></h2>
-            <div class="stats-grid">
-                <div class="stat-card" style="border-color: #5d5dff;"><h3>Toplam Kullanıcı</h3><p>842</p></div>
-                <div class="stat-card" style="border-color: #ffcc00;"><h3>Bekleyen Onay</h3><p>15</p></div>
+        <div id="adminView" style="display:none;">
+            <div class="dashboard-grid">
+                <div class="card" style="border-left: 4px solid #5d5dff;"><h3>Toplam Sanatçı</h3><div class="value">1,240</div></div>
+                <div class="card" style="border-left: 4px solid #ffcc00;"><h3>Onay Bekleyen</h3><div class="value">24</div></div>
+                <div class="card" style="border-left: 4px solid var(--spotify-green);"><h3>Platform Cirosu</h3><div class="value">₺840.000</div></div>
             </div>
-            <div class="content-area">
-                <h3>Bekleyen Şarkı Onayları</h3>
-                <hr style="border-color: #333; margin: 15px 0;">
-                <p>Onay bekleyen içerik bulunmuyor.</p>
+
+            <div class="section-box">
+                <h2>Bekleyen Şarkı Onayları</h2>
+                <p style="color:var(--text-dim); margin-top:10px;">Şu an için incelenmesi gereken yeni bir dosya bulunmuyor.</p>
             </div>
         </div>
-
-        <div id="releases" style="display: none;"><h2 class="section-title">Yayınlarım</h2><div class="content-area">Yayınlanmış şarkınız bulunmuyor.</div></div>
-        <div id="upload" style="display: none;"><h2 class="section-title">Yeni Şarkı Dağıt</h2><div class="content-area">Yükleme formu yakında burada olacak.</div></div>
     </main>
 
     <script>
-        // Sayfa Değiştirme Fonksiyonu
-        function showSection(sectionId) {
-            ['overview', 'admin', 'releases', 'upload'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.style.display = 'none';
-            });
-            document.getElementById(sectionId).style.display = 'block';
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = localStorage.getItem('username') || "Sanatçı";
+            const token = localStorage.getItem('token');
+
+            if (!token) { window.location.href = '/login.html'; return; }
+
+            document.getElementById('userName').textContent = username;
+            document.getElementById('userImg').src = `https://ui-avatars.com/api/?name=${username}&background=1DB954&color=fff`;
+
+            // ADMIN KONTROLÜ
+            if (username.toLowerCase() === 'admin' || username.toLowerCase() === 'remus') {
+                document.getElementById('adminMenu').style.display = 'flex';
+            }
+        });
+
+        function toggleView(view) {
+            const userView = document.getElementById('userView');
+            const adminView = document.getElementById('adminView');
+            const title = document.getElementById('pageTitle');
+
+            if (view === 'adminView') {
+                userView.style.display = 'none';
+                adminView.style.display = 'block';
+                title.textContent = "Yönetici Paneli";
+            } else {
+                userView.style.display = 'block';
+                adminView.style.display = 'none';
+                title.textContent = "Sanatçı Paneli";
+            }
             
-            // Navigasyon Aktifliği
+            // Sidebar active class değişimi
             document.querySelectorAll('nav li').forEach(li => li.classList.remove('active'));
             event.currentTarget.classList.add('active');
         }
 
-        // Kimlik Doğrulama ve Yetki Kontrolü
-        document.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('token');
-            const username = localStorage.getItem('username') || "Sanatçı";
-            
-            if (!token) {
-                window.location.href = '/login.html';
-                return;
-            }
-
-            document.getElementById('usernameDisplay').textContent = username;
-            document.getElementById('avatarInitial').textContent = username.charAt(0).toUpperCase();
-            document.getElementById('welcomeText').textContent = `Hoş geldin, ${username}`;
-
-            // Admin Yetki Kontrolü (JWT payload'dan veya localStorage'dan alınabilir)
-            // Simülasyon için: Eğer kullanıcı adı 'admin' ise admin panelini aç
-            if (username.toLowerCase() === 'admin' || username.toLowerCase() === 'remus') {
-                document.getElementById('adminNav').style.display = 'flex';
-            }
-        });
-
-        // Çıkış Yap
-        document.getElementById('logoutBtn').addEventListener('click', () => {
+        function logout() {
             localStorage.clear();
             window.location.href = '/login.html';
-        });
+        }
     </script>
 </body>
 </html>
