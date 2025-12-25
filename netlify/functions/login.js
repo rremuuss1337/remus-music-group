@@ -3,7 +3,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 exports.handler = async (event) => {
-  if (event.httpMethod !== 'POST') return { statusCode: 405 };
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: 'Method Not Allowed' };
+  }
 
   try {
     const { username, password } = JSON.parse(event.body);
@@ -27,13 +29,13 @@ exports.handler = async (event) => {
 
     const token = jwt.sign(
       { username, isAdmin: user.isAdmin === 'true' || user.isAdmin === true },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || 'fallback-secret-key',
       { expiresIn: '7d' }
     );
 
     return { statusCode: 200, body: JSON.stringify({ success: true, token, isAdmin: user.isAdmin }) };
   } catch (error) {
-    console.error(error);
+    console.error('Login error:', error);
     return { statusCode: 500, body: JSON.stringify({ message: 'Sunucu hatası!' }) };
   }
 };
