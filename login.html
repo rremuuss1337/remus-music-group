@@ -69,21 +69,27 @@
         const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value;
 
-        const res = await fetch('/.netlify/functions/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
+        try {
+            const res = await fetch('/.netlify/functions/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
 
-        const data = await res.json();
-        if (data.success) {
-            localStorage.setItem('token', data.token);
-            alert('Giriş başarılı!');
-            window.location.href = '/dashboard.html';
-        } else {
-            alert(data.message || 'Hata!');
+            const data = await res.json();
+
+            if (data.success) {
+                localStorage.setItem('token', data.token);
+                alert('Giriş başarılı!');
+                window.location.href = '/dashboard.html';
+            } else {
+                alert(data.message || 'Hata!');
+            }
+        } catch (err) {
+            alert('Bağlantı hatası: ' + err.message);
         }
     });
 </script>
 </body>
 </html>
+
