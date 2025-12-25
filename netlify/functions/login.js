@@ -1,46 +1,60 @@
-const { Redis } = require('@upstash/redis');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+// login.js
 
-exports.handler = async (event) => {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+exports.handler = async (event, context) => {
+  if (event.httpMethod !== "POST") {
+    return { statusCode: 405, body: "Method Not Allowed" };
   }
 
   try {
-    const body = JSON.parse(event.body);
-    const { username, password } = body;
+    const { email, password } = JSON.parse(event.body);
 
-    if (!username || !password) {
-      return { statusCode: 400, body: JSON.stringify({ message: 'Eksik bilgi!' }) };
-    }
+    const url = process.env.UPSTASH_REDIS_REST_URL;
+    const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
-    const redis = new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    // HATA BURADAYDI: /hgetall yerine /get kullanmalıyız
+    const redisResponse = await fetch(`${url}/get/user:${email}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
 
-    const user = await redis.hgetall(`user:${username}`);
-    if (Object.keys(user).length === 0) {
-      return { statusCode: 401, body: JSON.stringify({ message: 'Kullanıcı bulunamadı!' }) };
+    const result = await redisResponse.json();
+
+    // Redis'te kullanıcı bulunamadıysa result.result null döner
+    if (!result.result) {
+      return {
+        statusCode: 401,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: "Kullanıcı bulunamadı!" }),
+      };
     }
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      return { statusCode: 401, body: JSON.stringify({ message: 'Şifre yanlış!' }) };
+    // Gelen veri string olduğu için JSON.parse yapıyoruz
+    const user = JSON.parse(result.result);
+
+    // Şifre kontrolü
+    if (user.password === password) {
+      return {
+        statusCode: 200,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          message: "Giriş başarılı!",
+          username: user.username 
+        }),
+      };
+    } else {
+      return {
+        statusCode: 401,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: "Hatalı şifre!" }),
+      };
     }
 
-    await redis.hset(`user:${username}`, 'lastLogin', Date.now());
-
-    const token = jwt.sign(
-      { username, isAdmin: user.isAdmin === 'true' || user.isAdmin === true },
-      process.env.JWT_SECRET || 'fallback-secret-key',
-      { expiresIn: '7d' }
-    );
-
-    return { statusCode: 200, body: JSON.stringify({ success: true, token, isAdmin: user.isAdmin }) };
   } catch (error) {
-    console.error('Login error:', error);
-    return { statusCode: 500, body: JSON.stringify({ message: 'Sunucu hatası: ' + error.message }) };
+    return {
+      statusCode: 500,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "Sunucu hatası: " + error.message }),
+    };
   }
 };
