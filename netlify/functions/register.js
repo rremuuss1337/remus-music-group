@@ -2,25 +2,21 @@ const { Redis } = require('@upstash/redis');
 const bcrypt = require('bcryptjs');
 
 exports.handler = async (event) => {
-  console.log('Register function called with method:', event.httpMethod);
-
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
   try {
-    let body = event.body;
-    if (event.isBase64Encoded) {
-      body = Buffer.from(body, 'base64').toString();
+    const body = JSON.parse(event.body);
+    const { username, email, password } = body;
+
+    if (!username || !email || !password) {
+      return { statusCode: 400, body: JSON.stringify({ message: 'Eksik bilgi!' }) };
     }
 
-    const { username, email, password } = JSON.parse(body);
-
-    console.log('Parsed body:', { username, email });
-
     const redis = new Redis({
-      url: process.env.https://talented-wasp-9652.upstash.io,
-      token: process.env.ASW0AAImcDFlZGQ2NTA3YzBlZDU0OGQxYTliOTUwNjcxNWQwNmIwMnAxOTY1Mg,
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
     });
 
     const existing = await redis.hgetall(`user:${username}`);
@@ -32,7 +28,7 @@ exports.handler = async (event) => {
 
     await redis.hset(`user:${username}`, {
       password: hash,
-      email,
+      email: email,
       createdAt: Date.now(),
       lastLogin: 0,
       isAdmin: false
