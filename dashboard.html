@@ -134,13 +134,12 @@ async function fetchUserData() {
             return;
         }
 
-        // Token'dan username çek (senin login.js'de fake token dönüyor, gerçek JWT parse edebilirsin)
-        let username = 'Kullanıcı'; // default
+        let username = 'Kullanıcı';
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
             username = payload.username;
         } catch (e) {
-            console.log('Token parse edilemedi, default kullanılıyor');
+            console.log('Token parse edilemedi');
         }
 
         const res = await fetch('/.netlify/functions/get-user-data', {
@@ -148,6 +147,10 @@ async function fetchUserData() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username })
         });
+
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
 
         const data = await res.json();
         if (data.success) {
@@ -162,11 +165,10 @@ async function fetchUserData() {
         }
     } catch (err) {
         console.error('Fetch error:', err);
-        alert('Veri çekme hatası: ' + err.message);
+        alert('Veri çekme hatası: ' + err.message + ' - Konsolu kontrol et (F12)');
     }
 }
 
-// Sayfa yüklendiğinde çalıştır
 fetchUserData();
     </script>
 </body>
