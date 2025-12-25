@@ -1,4 +1,5 @@
 [build]
+  command = "npm install"  # Bağımlılıkları manuel install et
   functions = "netlify/functions"
   publish = "."
 
