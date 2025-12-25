@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Backstage - Remus Music Group</title>
+    <title>Dashboard - Remus Music Group</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0a0a0a;
             --surface: #121212;
-            --surface-hover: #1a1a1a;
             --text: #e0e0e0;
             --text-secondary: #9e9e9e;
-            --accent: #9f00ff;
-            --accent-hover: #b300ff;
+            --accent-green: #1db954;
+            --accent-purple: #9f00ff;
             --border: #252525;
+            --gradient: linear-gradient(135deg, #0a0a0a, #1a0033);
             --shadow: 0 8px 32px rgba(0,0,0,0.5);
-            --gradient: linear-gradient(135deg, #1a0033, #0a0a0a);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -25,7 +24,9 @@
             color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
+            cursor: pointer; /* Havalı cursor - default'ı pointer yaptım, istersen custom ekleriz */
         }
+        body:hover { cursor: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5v14" /></svg>'), auto; } /* Havalı + ikon cursor */
 
         /* Sidebar */
         .sidebar {
@@ -38,14 +39,11 @@
             border-right: 1px solid var(--border);
             padding: 2rem 1.5rem;
             overflow-y: auto;
-            transition: transform 0.3s ease;
-            z-index: 1000;
         }
-        .sidebar.hidden { transform: translateX(-100%); }
         .logo {
             font-size: 1.8rem;
             font-weight: 700;
-            color: var(--accent);
+            color: var(--accent-purple);
             margin-bottom: 3rem;
             text-align: center;
         }
@@ -59,14 +57,16 @@
             text-decoration: none;
             transition: all 0.2s;
         }
-        .nav-item:hover, .nav-item.active {
-            background: var(--surface-hover);
+        .nav-item:hover {
+            background: var(--surface);
             color: white;
+            transform: translateX(5px);
         }
+        .nav-item.active { color: var(--accent-green); background: var(--surface); }
         .nav-item span { margin-left: 1rem; font-weight: 500; }
 
-        /* Top Bar */
-        header {
+        /* Header */
+        .header {
             position: fixed;
             top: 0;
             left: 260px;
@@ -78,13 +78,10 @@
             align-items: center;
             padding: 0 2rem;
             z-index: 999;
-            transition: left 0.3s ease;
         }
-        header.shifted { left: 0; }
-        .menu-toggle { font-size: 1.6rem; cursor: pointer; color: var(--text); margin-right: 1.5rem; display: none; }
         .search-bar {
             flex: 1;
-            max-width: 500px;
+            max-width: 600px;
             background: var(--surface);
             border-radius: 50px;
             padding: 0.6rem 1.2rem;
@@ -99,227 +96,163 @@
             font-size: 1rem;
         }
         .search-bar input::placeholder { color: var(--text-secondary); }
-        .user-profile {
+        .header-icons {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .icon { color: var(--text-secondary); font-size: 1.3rem; cursor: pointer; transition: color 0.2s; }
+        .icon:hover { color: var(--accent-purple); }
+        .profile {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.8rem;
+            cursor: pointer;
         }
-        .user-profile img {
+        .profile img {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            object-fit: cover;
+            border: 2px solid var(--accent-green);
+            transition: border-color 0.3s;
         }
-        .user-profile span { font-weight: 500; }
+        .profile img:hover { border-color: var(--accent-hover); }
+        .profile-info { text-align: right; }
+        .profile-name { font-weight: 600; font-size: 1.1rem; }
+        .profile-type { font-size: 0.8rem; color: var(--text-secondary); font-weight: 400; }
 
-        /* Main Content */
-        .main-content {
-            margin-left: 260px;
-            padding: 90px 2rem 2rem;
-            transition: margin-left 0.3s ease;
-        }
-        .main-content.shifted { margin-left: 0; }
-
+        /* Stats */
         .stats-bar {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
         }
         .stat-card {
             background: var(--surface);
-            border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden;
+            padding: 1.2rem;
             transition: transform 0.3s;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.6s forwards;
+            text-align: center;
         }
-        .stat-card:nth-child(1) { animation-delay: 0.1s; }
-        .stat-card:nth-child(2) { animation-delay: 0.2s; }
-        .stat-card:nth-child(3) { animation-delay: 0.3s; }
-        .stat-card:nth-child(4) { animation-delay: 0.4s; }
-        .stat-card:nth-child(5) { animation-delay: 0.5s; }
-        .stat-card:hover { transform: translateY(-8px); }
-        .stat-card .icon {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.8rem;
-            opacity: 0.15;
-        }
-        .stat-card strong {
-            font-size: 2.2rem;
-            color: var(--accent);
-            display: block;
-            margin-bottom: 0.3rem;
-        }
-        .stat-card small {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-        .growth {
-            color: #00c853;
-            font-size: 0.9rem;
-            margin-left: 0.5rem;
-        }
-        .growth.red { color: #ff1744; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-value { font-size: 1.8rem; font-weight: 600; margin-bottom: 0.3rem; }
+        .stat-label { font-size: 0.9rem; color: var(--text-secondary); }
+        .stat-growth { font-size: 0.8rem; color: #00c853; }
+        .request-payment { background: #ff6b6b; color: white; padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.8rem; display: inline-block; margin-top: 0.5rem; cursor: pointer; transition: background 0.2s; }
+        .request-payment:hover { background: #ff4d4d; }
 
+        /* Charts */
         .content-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
-            gap: 2rem;
-            margin-bottom: 3rem;
+            gap: 1.5rem;
         }
         .chart-card {
             background: var(--surface);
-            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 1.5rem;
         }
-        .chart-card h3 {
-            margin-bottom: 1.5rem;
-            font-size: 1.3rem;
-        }
+        .chart-header { margin-bottom: 1rem; font-size: 1.2rem; font-weight: 500; }
+        .chart-placeholder { height: 220px; background: linear-gradient(135deg, #0a0a0a, #1a0033); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); }
+
+        /* Table */
         .release-table {
             background: var(--surface);
-            border: 1px solid var(--border);
             border-radius: 12px;
             overflow: hidden;
+            margin-top: 2rem;
         }
-        .release-table table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .release-table th, .release-table td {
-            padding: 1.2rem 1.5rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-        .release-table th {
-            background: #1a1a1a;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-        .release-table img {
-            width: 50px;
-            height: 50px;
-            border-radius: 6px;
-            object-fit: cover;
-        }
-        .error-tag {
-            background: #ff1744;
-            color: white;
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-        }
+        .release-table h3 { padding: 1.5rem; border-bottom: 1px solid var(--border); font-size: 1.2rem; font-weight: 500; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+        th { color: var(--text-secondary); font-weight: 500; }
+        td img { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; }
+        .release-error { background: #ff1744; color: white; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.8rem; }
 
-        @keyframes fadeInUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
+            .stats-bar { grid-template-columns: repeat(2, 1fr); }
             .content-grid { grid-template-columns: 1fr; }
-            .sidebar { width: 80px; }
-            .sidebar span { display: none; }
-            .main-content { margin-left: 80px; }
-            header { left: 80px; }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); width: 260px; }
-            .sidebar.active { transform: translateX(0); }
-            .menu-toggle { display: block; }
-            header { left: 0; }
-            .main-content { margin-left: 0; }
-            .stats-bar { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="logo">REMUS</div>
-        <a href="#" class="nav-item active"><span>Dashboard</span></a>
-        <a href="#" class="nav-item"><span>New Release</span></a>
-        <a href="#" class="nav-item"><span>Catalog Music</span></a>
-        <a href="#" class="nav-item"><span>Label Manage</span></a>
-        <a href="#" class="nav-item"><span>Manage Users</span></a>
-        <a href="#" class="nav-item"><span>Analytics</span></a>
-        <a href="#" class="nav-item"><span>Payment</span></a>
-        <a href="#" class="nav-item"><span>YouTube Request</span></a>
-        <a href="#" class="nav-item"><span>Digital Music Records</span></a>
-        <a href="#" class="nav-item"><span>About Us</span></a>
-        <a href="#" class="nav-item"><span>Career</span></a>
-        <a href="#" class="nav-item"><span>Support</span></a>
-        <a href="#" class="nav-item"><span>Policies & Terms</span></a>
-    </aside>
 
-    <!-- Header -->
-    <header>
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <button class="menu-toggle" id="menuToggle">☰</button>
-            <div class="search-bar">
-                <input type="text" placeholder="Search your Music Catalog, Users, Labels etc...">
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="logo">REMUS</div>
+    <a href="/dashboard.html" class="nav-item active"><span>Dashboard</span></a>
+    <a href="#" class="nav-item"><span>New Release</span></a>
+    <a href="#" class="nav-item"><span>Catalog Music</span></a>
+    <a href="#" class="nav-item"><span>Label Manage</span></a>
+    <a href="#" class="nav-item"><span>Manage Users</span></a>
+    <a href="#" class="nav-item"><span>Analytics</span></a>
+    <a href="#" class="nav-item"><span>Payment</span></a>
+    <a href="#" class="nav-item"><span>YouTube Request</span></a>
+    <a href="#" class="nav-item"><span>Digital Music Records</span></a>
+    <a href="#" class="nav-item"><span>About Us</span></a>
+    <a href="#" class="nav-item"><span>Career</span></a>
+    <a href="#" class="nav-item"><span>Support</span></a>
+    <a href="#" class="nav-item"><span>Policies & Terms</span></a>
+</aside>
+
+<!-- Header -->
+<header>
+    <div class="search-bar">
+        <input type="text" placeholder="Search your Music Catalog, Kullanici, Labels etc...">
+    </div>
+    <div class="header-icons">
+        <span class="icon">🔔</span>
+        <div class="profile">
+            <div class="profile-info">
+                <div class="profile-name" id="usernameDisplay">Kullanıcı</div>
+                <div class="profile-type" id="accountType">Artist</div>
             </div>
-        </div>
-        <div class="user-profile">
-            <span id="usernameDisplay">Kullanıcı</span>
-            <img src="https://via.placeholder.com/40" alt="Profile">
+            <img src="https://via.placeholder.com/40" alt="Profile" style="border: 2px solid var(--accent-green); border-radius: 50%; transition: border 0.2s; cursor: pointer;" onmouseover="this.style.border='2px solid var(--accent-hover)';" onmouseout="this.style.border='2px solid var(--accent-green)';">
             <button class="logout-btn" id="logoutBtn">Çıkış</button>
         </div>
-    </header>
+    </div>
+</header>
 
-    <!-- Main Content -->
-    <main class="main-content">
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
         <div class="stats-bar">
             <div class="stat-card">
                 <strong id="totalStreams">0</strong>
                 <p>Total Streams</p>
-                <small class="growth">+14.2% ↑</small>
+                <small class="stat-growth">+14.2% ↑</small>
             </div>
             <div class="stat-card">
                 <strong id="totalRevenue">$0</strong>
                 <p>Total Revenue</p>
-                <small class="growth">+12.2% ↑</small>
+                <small class="stat-growth">+12.2% ↑</small>
             </div>
             <div class="stat-card">
                 <strong id="balance">$0</strong>
                 <p>Balance</p>
-                <button style="margin-top: 0.5rem; background: linear-gradient(90deg, #ff6b6b, #ff8e53); color: white; padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.9rem;">Request Payment</button>
+                <div class="request-payment">Request Payment</div>
             </div>
             <div class="stat-card">
                 <strong id="totalTracks">0</strong>
                 <p>Total Tracks</p>
-                <small class="growth">+2 ↑</small>
+                <small class="stat-growth">+2 ↑</small>
             </div>
         </div>
 
         <div class="content-grid">
             <div class="chart-card">
                 <h3>Streaming Performance</h3>
-                <div style="height: 300px; background: #1a1a1a; border-radius: 8px; margin-top: 1rem; position: relative;">
-                    <!-- Placeholder chart – gerçekte Chart.js veya benzeri eklenebilir -->
-                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, #1a0033, transparent);"></div>
-                    <div style="position: absolute; bottom: 20%; left: 10%; right: 10%; height: 2px; background: var(--accent);"></div>
-                </div>
+                <div class="chart-placeholder">Chart Here (Line Graph)</div>
             </div>
-
             <div class="chart-card">
                 <h3>Revenue Report</h3>
-                <div style="height: 300px; background: #1a1a1a; border-radius: 8px; margin-top: 1rem; display: flex; align-items: center; justify-content: center;">
-                    <!-- Placeholder pie chart -->
-                    <div style="width: 180px; height: 180px; border-radius: 50%; background: conic-gradient(#9f00ff 0% 40%, #1db954 40% 65%, #ff6b6b 65% 85%, #00c853 85% 100%);"></div>
-                </div>
+                <div class="chart-placeholder">Pie Chart Here</div>
             </div>
         </div>
 
         <div class="release-table">
-            <h3 style="padding: 1.5rem; border-bottom: 1px solid var(--border);">Latest Releases</h3>
+            <h3>Latest Releases</h3>
             <table>
                 <thead>
                     <tr>
@@ -346,7 +279,7 @@
                         <td>#9405820</td>
                         <td>$1,500.00</td>
                         <td>03 Aug 2017</td>
-                        <td class="error-tag">Release Error</td>
+                        <td class="release-error">Release Error</td>
                     </tr>
                     <tr>
                         <td>Maan Meri Jaan</td>
@@ -359,37 +292,51 @@
                 </tbody>
             </table>
         </div>
-    </main>
+    </div>
+</main>
 
-    <script>
-        // Token kontrolü
-        const token = localStorage.getItem('token');
-        if (!token) window.location.href = '/login.html';
+<script>
+    // Token kontrolü
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = '/login.html';
+    }
 
+    // Redis'ten data çek (stat'lar ve hesap türü)
+    async function fetchUserData() {
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
-            document.getElementById('usernameDisplay').textContent = payload.username;
-        } catch (e) {
-            document.getElementById('usernameDisplay').textContent = 'Kullanıcı';
+            const username = payload.username;
+
+            const res = await fetch('/.netlify/functions/get-user-data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('totalStreams').textContent = data.stats.totalStreams || '0';
+                document.getElementById('totalRevenue').textContent = data.stats.totalRevenue || '$0';
+                document.getElementById('balance').textContent = data.stats.balance || '$0';
+                document.getElementById('totalTracks').textContent = data.stats.totalTracks || '0';
+                document.getElementById('accountType').textContent = data.accountType || 'Artist';
+                document.getElementById('usernameDisplay').textContent = username;
+            } else {
+                alert(data.message || 'Data çekme hatası');
+            }
+        } catch (err) {
+            alert('Veri çekme hatası: ' + err.message);
         }
+    }
 
-        // Çıkış
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('token');
-            window.location.href = '/';
-        });
+    fetchUserData();
 
-        // Sidebar toggle (mobil)
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.querySelector('.sidebar');
-        const mainContent = document.querySelector('.main-content');
-        const header = document.querySelector('header');
-
-        menuToggle?.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-            mainContent.classList.toggle('shifted');
-            header.classList.toggle('shifted');
-        });
-    </script>
+    // Çıkış
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('token');
+        window.location.href = '/';
+    });
+</script>
 </body>
 </html>
