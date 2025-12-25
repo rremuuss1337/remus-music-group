@@ -19,8 +19,8 @@ exports.handler = async (event) => {
     console.log('Parsed body:', { username, email });
 
     const redis = new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      url: process.env.https://talented-wasp-9652.upstash.io,
+      token: process.env.ASW0AAImcDFlZGQ2NTA3YzBlZDU0OGQxYTliOTUwNjcxNWQwNmIwMnAxOTY1Mg,
     });
 
     const existing = await redis.hgetall(`user:${username}`);
