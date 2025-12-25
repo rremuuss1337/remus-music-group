@@ -5,81 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Remus Music Group</title>
     <style>
-        body { font-family: Arial, sans-serif; background: linear-gradient(#f5f7fa, #e4edf5); color: #333; min-height: 100vh; display: flex; flex-direction: column; }
-        header { background: #fff; border-bottom: 1px solid #ddd; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 1.8rem; font-weight: bold; }
-        nav ul { list-style: none; display: flex; gap: 2rem; }
-        nav a { color: #333; text-decoration: none; }
-        .auth-buttons button { background: #1db954; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 30px; cursor: pointer; }
-        .container { max-width: 450px; margin: 8rem auto; padding: 2rem; background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-        h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
-        form { display: grid; gap: 1.2rem; }
-        input { padding: 1rem; border: 1px solid #ddd; border-radius: 8px; }
-        button[type="submit"] { background: #1db954; color: white; border: none; padding: 1rem; border-radius: 30px; cursor: pointer; font-size: 1.1rem; }
-        .link { margin-top: 1.5rem; }
-        .link a { color: #1db954; text-decoration: none; font-weight: bold; }
-        footer { margin-top: auto; background: #222; color: #ccc; text-align: center; padding: 2rem; }
+        body { font-family: Arial; background: #f0f2f5; padding: 50px; text-align: center; }
+        .container { max-width: 400px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        h1 { margin-bottom: 20px; }
+        input { display: block; width: 100%; margin: 10px 0; padding: 12px; border: 1px solid #ddd; border-radius: 5px; }
+        button { width: 100%; padding: 12px; background: #1db954; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
     </style>
 </head>
 <body>
-<header>
-    <a href="/" class="logo">Remus Music Group</a>
-    <nav>
-        <ul>
-            <li><a href="/#features">Why Choose</a></li>
-            <li><a href="/#platforms">Platforms</a></li>
-            <li><a href="/#about">About</a></li>
-            <li><a href="/#contact">Contact</a></li>
-        </ul>
-    </nav>
-    <div class="auth-buttons">
-        <button onclick="window.location.href='/register.html'">Register</button>
+    <div class="container">
+        <h1>Giriş Yap</h1>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Kullanıcı Adı" required>
+            <input type="password" id="password" placeholder="Şifre" required>
+            <button type="submit">Giriş Yap</button>
+        </form>
+        <p style="margin-top: 20px;">Hesabın yok mu? <a href="/register.html">Kayıt Ol</a></p>
     </div>
-</header>
 
-<div class="container">
-    <h1>Welcome Back</h1>
-    <p class="subtitle">Login to your account</p>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
 
-    <form id="loginForm">
-        <input type="text" id="username" placeholder="Username" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <button type="submit">Login</button>
-    </form>
+            try {
+                const res = await fetch('/.netlify/functions/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
 
-    <div class="link">
-        Don't have an account? <a href="/register.html">Register now</a>
-    </div>
-</div>
-
-<footer>
-    <p>© 2025 Remus Music Group</p>
-</footer>
-
-<script>
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const username = document.getElementById('username').value.trim();
-        const password = document.getElementById('password').value;
-
-        try {
-            const res = await fetch('/.netlify/functions/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-            const data = await res.json();
-            if (data.success) {
-                localStorage.setItem('token', data.token);
-                alert('Giriş başarılı!');
-                window.location.href = '/dashboard.html';
-            } else {
-                alert(data.message || 'Hata!');
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('token', data.token);
+                    alert('Giriş başarılı!');
+                    window.location.href = '/';
+                } else {
+                    alert(data.message || 'Hata!');
+                }
+            } catch (err) {
+                alert('Bağlantı hatası: ' + err.message);
             }
-        } catch (err) {
-            alert('Bağlantı hatası: ' + err.message);
-        }
-    });
-</script>
+        });
+    </script>
 </body>
 </html>
