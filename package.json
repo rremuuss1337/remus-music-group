@@ -1,8 +1,6 @@
 {
-  "name": "remus-music-group",
-  "version": "1.0.0",
   "dependencies": {
-    "@neondatabase/serverless": "^0.9.4",
+    "@upstash/redis": "^1.34.0",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2"
   }
