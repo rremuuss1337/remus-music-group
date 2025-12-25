@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Release - Remus Music Group</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Dashboard'daki style'ı kopyala (kısalttım, tam kodu dashboard'dan al) */
+        :root { /* ... */ }
+        body { /* ... */ }
+        .wrapper { display: flex; }
+        .sidebar { /* ... */ }
+        .main-content { /* ... */ }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <aside class="sidebar">
+            <!-- Dashboard'daki sidebar'ı kopyala -->
+            <div class="logo">REMUS</div>
+            <a href="/dashboard.html" class="nav-item"><span>Dashboard</span></a>
+            <a href="/new-release.html" class="nav-item active"><span>New Release</span></a>
+            <!-- Diğer link'ler aynı -->
+        </aside>
+
+        <main class="main-content">
+            <div class="container">
+                <h1>Yeni Release</h1>
+                <p>Burada yeni şarkı yükleme formu olacak.</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        if (!localStorage.getItem('token')) {
+            window.location.href = '/login.html';
+        }
+    </script>
+</body>
+</html>
