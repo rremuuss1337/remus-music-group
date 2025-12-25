@@ -126,10 +126,48 @@
     </div>
 
     <script>
-        // Login Kontrolü
-        if (!localStorage.getItem('token')) {
+async function fetchUserData() {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
             window.location.href = '/login.html';
+            return;
         }
+
+        // Token'dan username çek (senin login.js'de fake token dönüyor, gerçek JWT parse edebilirsin)
+        let username = 'Kullanıcı'; // default
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            username = payload.username;
+        } catch (e) {
+            console.log('Token parse edilemedi, default kullanılıyor');
+        }
+
+        const res = await fetch('/.netlify/functions/get-user-data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('totalStreams').textContent = data.stats.totalStreams;
+            document.getElementById('totalRevenue').textContent = data.stats.totalRevenue;
+            document.getElementById('balance').textContent = data.stats.balance;
+            document.getElementById('totalTracks').textContent = data.stats.totalTracks;
+            document.getElementById('accountType').textContent = data.accountType;
+            document.getElementById('usernameDisplay').textContent = data.username;
+        } else {
+            alert(data.message || 'Veri çekme hatası');
+        }
+    } catch (err) {
+        console.error('Fetch error:', err);
+        alert('Veri çekme hatası: ' + err.message);
+    }
+}
+
+// Sayfa yüklendiğinde çalıştır
+fetchUserData();
     </script>
 </body>
 </html>
