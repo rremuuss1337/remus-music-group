@@ -33,14 +33,14 @@ exports.handler = async (event) => {
     await redis.hset(`user:${username}`, 'lastLogin', Date.now());
 
     const token = jwt.sign(
-      { username, isAdmin: user.isAdmin === 'true' },
+      { username, isAdmin: user.isAdmin === 'true' || user.isAdmin === true },
       process.env.JWT_SECRET || 'fallback-secret-key',
       { expiresIn: '7d' }
     );
 
     return { statusCode: 200, body: JSON.stringify({ success: true, token, isAdmin: user.isAdmin }) };
   } catch (error) {
-    console.error('Login error:', error.message);
+    console.error('Login error:', error);
     return { statusCode: 500, body: JSON.stringify({ message: 'Sunucu hatası: ' + error.message }) };
   }
 };
