@@ -3,19 +3,17 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 exports.handler = async (event) => {
-  console.log('Login function called');
-
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
   try {
-    let body = event.body;
-    if (event.isBase64Encoded) {
-      body = Buffer.from(body, 'base64').toString();
-    }
+    const body = JSON.parse(event.body);
+    const { username, password } = body;
 
-    const { username, password } = JSON.parse(body);
+    if (!username || !password) {
+      return { statusCode: 400, body: JSON.stringify({ message: 'Eksik bilgi!' }) };
+    }
 
     const redis = new Redis({
       url: process.env.UPSTASH_REDIS_REST_URL,
@@ -36,7 +34,7 @@ exports.handler = async (event) => {
 
     const token = jwt.sign(
       { username, isAdmin: user.isAdmin === 'true' },
-      process.env.JWT_SECRET || 'fallback-secret',
+      process.env.JWT_SECRET || 'fallback-secret-key',
       { expiresIn: '7d' }
     );
 
