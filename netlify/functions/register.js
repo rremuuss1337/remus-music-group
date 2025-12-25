@@ -36,7 +36,7 @@ exports.handler = async (event) => {
 
     return { statusCode: 200, body: JSON.stringify({ success: true, message: 'Kayıt başarılı!' }) };
   } catch (error) {
-    console.error('Register error:', error.message);
+    console.error('Register error:', error);
     return { statusCode: 500, body: JSON.stringify({ message: 'Sunucu hatası: ' + error.message }) };
   }
 };
